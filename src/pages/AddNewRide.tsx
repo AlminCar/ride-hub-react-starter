@@ -1,0 +1,208 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapPin, Clock, Users, DollarSign, Calendar } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const AddNewRide = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    from: "",
+    to: "",
+    date: "",
+    time: "",
+    seats: "",
+    price: "",
+    description: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Ride Posted Successfully!",
+      description: "Your ride has been added and is now visible to other users.",
+    });
+    // Reset form
+    setFormData({
+      from: "",
+      to: "",
+      date: "",
+      time: "",
+      seats: "",
+      price: "",
+      description: ""
+    });
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Add New Ride</h1>
+          <p className="text-gray-600 mt-2">
+            Offer a ride to help others and share travel costs
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Ride Details</CardTitle>
+            <CardDescription>
+              Fill in the information about your upcoming trip
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Route Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="from" className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-green-600" />
+                    <span>From</span>
+                  </Label>
+                  <Input
+                    id="from"
+                    placeholder="Starting location"
+                    value={formData.from}
+                    onChange={(e) => handleInputChange("from", e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="to" className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-red-600" />
+                    <span>To</span>
+                  </Label>
+                  <Input
+                    id="to"
+                    placeholder="Destination"
+                    value={formData.to}
+                    onChange={(e) => handleInputChange("to", e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Date and Time */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date" className="flex items-center space-x-2">
+                    <Calendar className="h-4 w-4 text-blue-600" />
+                    <span>Date</span>
+                  </Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => handleInputChange("date", e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="time" className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                    <span>Departure Time</span>
+                  </Label>
+                  <Input
+                    id="time"
+                    type="time"
+                    value={formData.time}
+                    onChange={(e) => handleInputChange("time", e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Seats and Price */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="seats" className="flex items-center space-x-2">
+                    <Users className="h-4 w-4 text-purple-600" />
+                    <span>Available Seats</span>
+                  </Label>
+                  <Select value={formData.seats} onValueChange={(value) => handleInputChange("seats", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select number of seats" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="1">1 seat</SelectItem>
+                      <SelectItem value="2">2 seats</SelectItem>
+                      <SelectItem value="3">3 seats</SelectItem>
+                      <SelectItem value="4">4 seats</SelectItem>
+                      <SelectItem value="5">5 seats</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price" className="flex items-center space-x-2">
+                    <DollarSign className="h-4 w-4 text-green-600" />
+                    <span>Price per Person</span>
+                  </Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => handleInputChange("price", e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Additional Information</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Any additional details about your ride (meeting point, preferences, etc.)"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  rows={4}
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end space-x-4">
+                <Button type="button" variant="outline">
+                  Save as Draft
+                </Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                  Post Ride
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Tips Card */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Tips for a Great Ride</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>• Be punctual and communicate any delays</li>
+              <li>• Keep your car clean and comfortable</li>
+              <li>• Be clear about pickup and drop-off points</li>
+              <li>• Respect passengers' preferences (music, temperature, etc.)</li>
+              <li>• Ensure you have proper insurance coverage</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default AddNewRide;
