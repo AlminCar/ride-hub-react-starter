@@ -1,7 +1,16 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, Car, BarChart, MessageCircle, User, LogOut, MapPin } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  Car,
+  BarChart,
+  MessageCircle,
+  User,
+  LogOut,
+  MapPin,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,10 +20,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAdministration } from "@/state/administration";
 
 export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { data: administrationState } = useAdministration();
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
@@ -22,6 +33,10 @@ export const Header = () => {
     { name: "Map", href: "/map", icon: MapPin },
     { name: "Analytics", href: "/analytics", icon: BarChart },
   ];
+
+  const filteredNavigation = !administrationState.mapIntegration
+    ? navigation.filter((navigationItem) => navigationItem.name !== "Map")
+    : navigation;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -41,7 +56,7 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => {
+            {filteredNavigation.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
@@ -67,17 +82,26 @@ export const Header = () => {
                 + Add Ride
               </Button>
             </Link>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
-                    <AvatarFallback className="bg-blue-600 text-white">JD</AvatarFallback>
+                    <AvatarFallback className="bg-blue-600 text-white">
+                      JD
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-white border shadow-lg" align="end" forceMount>
+              <DropdownMenuContent
+                className="w-56 bg-white border shadow-lg"
+                align="end"
+                forceMount
+              >
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
                     <p className="font-medium">John Doe</p>
@@ -87,12 +111,14 @@ export const Header = () => {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/messages" className="flex items-center">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    <span>Messages</span>
-                  </Link>
-                </DropdownMenuItem>
+                {administrationState.realTimeMessaging && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/messages" className="flex items-center">
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      <span>Messages</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/profile" className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
@@ -128,7 +154,7 @@ export const Header = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t">
-              {navigation.map((item) => {
+              {filteredNavigation.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
@@ -146,16 +172,22 @@ export const Header = () => {
                   </Link>
                 );
               })}
-              
+
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center px-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
-                    <AvatarFallback className="bg-blue-600 text-white">JD</AvatarFallback>
+                    <AvatarFallback className="bg-blue-600 text-white">
+                      JD
+                    </AvatarFallback>
                   </Avatar>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">John Doe</div>
-                    <div className="text-sm text-gray-500">john.doe@example.com</div>
+                    <div className="text-base font-medium text-gray-800">
+                      John Doe
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      john.doe@example.com
+                    </div>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
