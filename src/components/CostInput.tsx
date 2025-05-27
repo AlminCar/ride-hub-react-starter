@@ -1,9 +1,14 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { DollarSign, Fuel, ParkingCircle, Calculator } from "lucide-react";
 
 interface CostInputProps {
@@ -20,43 +25,54 @@ interface CostBreakdown {
   perPerson: number;
 }
 
-export const CostInput = ({ onCostUpdate, initialCosts, passengerCount }: CostInputProps) => {
+export const CostInput = ({
+  onCostUpdate,
+  initialCosts,
+  passengerCount,
+}: CostInputProps) => {
   const [fuelCost, setFuelCost] = useState(initialCosts?.fuelCost || 0);
-  const [parkingCost, setParkingCost] = useState(initialCosts?.parkingCost || 0);
+  const [parkingCost, setParkingCost] = useState(
+    initialCosts?.parkingCost || 0
+  );
   const [tollsCost, setTollsCost] = useState(initialCosts?.tollsCost || 0);
 
   const calculateCosts = (fuel: number, parking: number, tolls: number) => {
     const total = fuel + parking + tolls;
-    const perPerson = passengerCount > 0 ? Math.min(total / (passengerCount + 1), total * 0.5) : 0;
-    
+    const perPerson =
+      passengerCount > 0
+        ? Math.min(total / (passengerCount + 1), total * 0.5)
+        : 0;
+
     const breakdown: CostBreakdown = {
       fuelCost: fuel,
       parkingCost: parking,
       tollsCost: tolls,
       totalCost: total,
-      perPerson: Math.round(perPerson * 100) / 100
+      perPerson: Math.round(perPerson * 100) / 100,
     };
-    
-    onCostUpdate(breakdown);
+
     return breakdown;
   };
 
   const handleFuelChange = (value: string) => {
     const fuel = parseFloat(value) || 0;
     setFuelCost(fuel);
-    calculateCosts(fuel, parkingCost, tollsCost);
+    const breakdown = calculateCosts(fuel, parkingCost, tollsCost);
+    onCostUpdate(breakdown);
   };
 
   const handleParkingChange = (value: string) => {
     const parking = parseFloat(value) || 0;
     setParkingCost(parking);
-    calculateCosts(fuelCost, parking, tollsCost);
+    const breakdown = calculateCosts(fuelCost, parking, tollsCost);
+    onCostUpdate(breakdown);
   };
 
   const handleTollsChange = (value: string) => {
     const tolls = parseFloat(value) || 0;
     setTollsCost(tolls);
-    calculateCosts(fuelCost, parkingCost, tolls);
+    const breakdown = calculateCosts(fuelCost, parkingCost, tolls);
+    onCostUpdate(breakdown);
   };
 
   const currentBreakdown = calculateCosts(fuelCost, parkingCost, tollsCost);
@@ -69,7 +85,8 @@ export const CostInput = ({ onCostUpdate, initialCosts, passengerCount }: CostIn
           <span>Cost Breakdown</span>
         </CardTitle>
         <CardDescription>
-          Specify the costs for this ride. Passengers will pay maximum 50% of total cost.
+          Specify the costs for this ride. Passengers will pay maximum 50% of
+          total cost.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -85,11 +102,11 @@ export const CostInput = ({ onCostUpdate, initialCosts, passengerCount }: CostIn
               placeholder="0.00"
               min="0"
               step="0.01"
-              value={fuelCost || ''}
+              value={fuelCost || ""}
               onChange={(e) => handleFuelChange(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="parking" className="flex items-center space-x-2">
               <ParkingCircle className="h-4 w-4 text-blue-600" />
@@ -101,11 +118,11 @@ export const CostInput = ({ onCostUpdate, initialCosts, passengerCount }: CostIn
               placeholder="0.00"
               min="0"
               step="0.01"
-              value={parkingCost || ''}
+              value={parkingCost || ""}
               onChange={(e) => handleParkingChange(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="tolls" className="flex items-center space-x-2">
               <DollarSign className="h-4 w-4 text-purple-600" />
@@ -117,12 +134,12 @@ export const CostInput = ({ onCostUpdate, initialCosts, passengerCount }: CostIn
               placeholder="0.00"
               min="0"
               step="0.01"
-              value={tollsCost || ''}
+              value={tollsCost || ""}
               onChange={(e) => handleTollsChange(e.target.value)}
             />
           </div>
         </div>
-        
+
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex justify-between">
@@ -131,12 +148,15 @@ export const CostInput = ({ onCostUpdate, initialCosts, passengerCount }: CostIn
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Per Passenger:</span>
-              <span className="font-medium text-blue-600">${currentBreakdown.perPerson}</span>
+              <span className="font-medium text-blue-600">
+                ${currentBreakdown.perPerson}
+              </span>
             </div>
           </div>
           {passengerCount > 0 && (
             <p className="text-xs text-gray-500 mt-2">
-              Cost is capped at 50% of total cost (${(currentBreakdown.totalCost * 0.5).toFixed(2)}) per passenger
+              Cost is capped at 50% of total cost ($
+              {(currentBreakdown.totalCost * 0.5).toFixed(2)}) per passenger
             </p>
           )}
         </div>

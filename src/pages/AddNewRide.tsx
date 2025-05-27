@@ -58,7 +58,7 @@ const AddNewRide = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleCostUpdate = (costs: any) => {
+  const handleCostUpdate = (costs) => {
     setCostBreakdown(costs);
   };
 
