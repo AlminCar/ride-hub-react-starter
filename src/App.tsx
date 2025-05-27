@@ -25,6 +25,7 @@ const App = () => {
         <BrowserRouter>
           <div className="min-h-screen bg-gray-50">
             <Header />
+            {/* TODO: Empty component */}
             <main className="pt-16">
               <Routes>
                 <Route path="/" element={<Home />} />

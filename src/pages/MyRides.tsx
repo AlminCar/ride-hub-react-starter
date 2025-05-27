@@ -1,22 +1,71 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Clock, Users, Car, MessageCircle, Check, X, DollarSign, Loader2 } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  Users,
+  Car,
+  MessageCircle,
+  DollarSign,
+  Loader2,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { useMyOfferedRides, useMyBookedRides, usePastRides, useApplicantAction, useCancelRide } from "../hooks/useRides";
+import { useApplicantAction, useCancelRide } from "../hooks/useRides";
 import { ApplicantManagement } from "../components/ApplicantManagement";
 import { CostBreakdown } from "../components/CostBreakdown";
+import { useMyAvailableRides } from "@/state/myAvailableRides";
+import { useMyOfferedRides } from "@/state/myOfferedRides";
+import { useMyBookedRides } from "@/state/myBookedRides";
+import { useMyPastRides } from "@/state/myPastRides";
 
 const MyRides = () => {
-  const { data: myOfferedRides, isLoading: offeredLoading, error: offeredError } = useMyOfferedRides();
-  const { data: myBookedRides, isLoading: bookedLoading, error: bookedError } = useMyBookedRides();
-  const { data: pastRides, isLoading: pastLoading, error: pastError } = usePastRides();
-  
+  const {
+    data: myOfferedRides,
+    isLoading: offeredLoading,
+    error: offeredError,
+  } = useMyOfferedRides();
+  const {
+    data: myBookedRides,
+    isLoading: bookedLoading,
+    error: bookedError,
+  } = useMyBookedRides();
+  const {
+    data: myPastRides,
+    isLoading: pastLoading,
+    error: pastError,
+  } = useMyPastRides();
+  const {
+    data: myAvailableRides,
+    isLoading: availableLoading,
+    error: availableError,
+  } = useMyAvailableRides();
+
+  console.log("My booked rides component rendered", myBookedRides);
+  console.log("My available rides component rendered", myAvailableRides);
+  console.log("My offered rides component rendered", myOfferedRides);
+  console.log("My past rides component rendered", myPastRides);
+
   const applicantActionMutation = useApplicantAction();
   const cancelRideMutation = useCancelRide();
 
@@ -44,7 +93,11 @@ const MyRides = () => {
     cancelRideMutation.mutate({ rideId, type });
   };
 
-  const handleApplicantAction = (rideId: number, applicantId: number, action: 'accept' | 'decline') => {
+  const handleApplicantAction = (
+    rideId: number,
+    applicantId: number,
+    action: "accept" | "decline"
+  ) => {
     applicantActionMutation.mutate({ rideId, applicantId, action });
   };
 
@@ -90,16 +143,23 @@ const MyRides = () => {
             {offeredLoading && <LoadingSkeleton />}
             {offeredError && (
               <div className="text-center py-8">
-                <p className="text-red-600">Error loading offered rides. Please try again.</p>
+                <p className="text-red-600">
+                  Error loading offered rides. Please try again.
+                </p>
               </div>
             )}
             {myOfferedRides && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {myOfferedRides.map((ride) => (
-                  <Card key={ride.id} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={ride.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader>
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">Your Ride Offer</CardTitle>
+                        <CardTitle className="text-lg">
+                          Your Ride Offer
+                        </CardTitle>
                         <Badge className={getStatusColor(ride.status)}>
                           {ride.status === "full" ? "Full" : "Available"}
                         </Badge>
@@ -112,7 +172,8 @@ const MyRides = () => {
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
-                          From <strong>{ride.from}</strong> to <strong>{ride.to}</strong>
+                          From <strong>{ride.from}</strong> to{" "}
+                          <strong>{ride.to}</strong>
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -124,20 +185,21 @@ const MyRides = () => {
                       <div className="flex items-center space-x-2">
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
-                          <strong>{ride.booked}</strong> of <strong>{ride.seats}</strong> seats booked
+                          <strong>{ride.booked}</strong> of{" "}
+                          <strong>{ride.seats}</strong> seats booked
                         </span>
                       </div>
-                      
+
                       {ride.applicants && ride.applicants.length > 0 && (
-                        <ApplicantManagement 
+                        <ApplicantManagement
                           applicants={ride.applicants}
                           onAction={handleApplicantAction}
                           rideId={ride.id}
                         />
                       )}
-                      
+
                       <CostBreakdown breakdown={ride.costBreakdown} />
-                      
+
                       <div className="flex justify-between items-center pt-2">
                         <div className="space-x-2">
                           <Button variant="outline" size="sm">
@@ -150,12 +212,14 @@ const MyRides = () => {
                         </div>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="destructive" 
+                            <Button
+                              variant="destructive"
                               size="sm"
                               disabled={cancelRideMutation.isPending}
                             >
-                              {cancelRideMutation.isPending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                              {cancelRideMutation.isPending && (
+                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                              )}
                               Cancel
                             </Button>
                           </AlertDialogTrigger>
@@ -163,12 +227,17 @@ const MyRides = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Cancel Ride</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to cancel this ride? All accepted passengers will be notified.
+                                Are you sure you want to cancel this ride? All
+                                accepted passengers will be notified.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Keep Ride</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleCancelRide(ride.id, 'offered')}>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleCancelRide(ride.id, "offered")
+                                }
+                              >
                                 Cancel Ride
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -186,13 +255,18 @@ const MyRides = () => {
             {bookedLoading && <LoadingSkeleton />}
             {bookedError && (
               <div className="text-center py-8">
-                <p className="text-red-600">Error loading booked rides. Please try again.</p>
+                <p className="text-red-600">
+                  Error loading booked rides. Please try again.
+                </p>
               </div>
             )}
             {myBookedRides && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {myBookedRides.map((ride) => (
-                  <Card key={ride.id} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={ride.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader>
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-lg">Booked Ride</CardTitle>
@@ -202,8 +276,16 @@ const MyRides = () => {
                       </div>
                       <CardDescription className="flex items-center space-x-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={ride.driverAvatar} alt={ride.driver} />
-                          <AvatarFallback className="text-xs">{ride.driver.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                          <AvatarImage
+                            src={ride.driverAvatar}
+                            alt={ride.driver}
+                          />
+                          <AvatarFallback className="text-xs">
+                            {ride.driver
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
                         </Avatar>
                         <span>Driver: {ride.driver}</span>
                       </CardDescription>
@@ -212,16 +294,20 @@ const MyRides = () => {
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
-                          From <strong>{ride.from}</strong> to <strong>{ride.to}</strong>
+                          From <strong>{ride.from}</strong> to{" "}
+                          <strong>{ride.to}</strong>
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Clock className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
-                          <strong>{new Date(ride.date).toLocaleDateString()}</strong> at <strong>{ride.time}</strong>
+                          <strong>
+                            {new Date(ride.date).toLocaleDateString()}
+                          </strong>{" "}
+                          at <strong>{ride.time}</strong>
                         </span>
                       </div>
-                      {ride.status === 'accepted' && (
+                      {ride.status === "accepted" && (
                         <>
                           <div className="flex items-center space-x-2">
                             <DollarSign className="h-4 w-4 text-gray-500" />
@@ -249,14 +335,23 @@ const MyRides = () => {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Cancel Booking
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to cancel this booking? The driver will be notified.
+                                Are you sure you want to cancel this booking?
+                                The driver will be notified.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Keep Booking</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleCancelRide(ride.id, 'booked')}>
+                              <AlertDialogCancel>
+                                Keep Booking
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleCancelRide(ride.id, "booked")
+                                }
+                              >
                                 Cancel Booking
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -274,16 +369,20 @@ const MyRides = () => {
             {pastLoading && <LoadingSkeleton />}
             {pastError && (
               <div className="text-center py-8">
-                <p className="text-red-600">Error loading past rides. Please try again.</p>
+                <p className="text-red-600">
+                  Error loading past rides. Please try again.
+                </p>
               </div>
             )}
-            {pastRides && (
+            {myPastRides && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {pastRides.map((ride) => (
+                {myPastRides.map((ride) => (
                   <Card key={ride.id} className="opacity-75">
                     <CardHeader>
                       <CardTitle className="text-lg">
-                        {ride.type === "offered" ? "Ride You Offered" : "Ride You Took"}
+                        {ride.type === "offered"
+                          ? "Ride You Offered"
+                          : "Ride You Took"}
                       </CardTitle>
                       <CardDescription>
                         {ride.type === "booked" && `Driver: ${ride.driver}`}
@@ -293,13 +392,17 @@ const MyRides = () => {
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
-                          From <strong>{ride.from}</strong> to <strong>{ride.to}</strong>
+                          From <strong>{ride.from}</strong> to{" "}
+                          <strong>{ride.to}</strong>
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Clock className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
-                          <strong>{new Date(ride.date).toLocaleDateString()}</strong> at <strong>{ride.time}</strong>
+                          <strong>
+                            {new Date(ride.date).toLocaleDateString()}
+                          </strong>{" "}
+                          at <strong>{ride.time}</strong>
                         </span>
                       </div>
                       {ride.type === "offered" && (

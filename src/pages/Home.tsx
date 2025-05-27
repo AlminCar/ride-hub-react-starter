@@ -1,21 +1,48 @@
-
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Car, DollarSign, TrendingUp, UserCheck, Zap } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  Users,
+  Car,
+  DollarSign,
+  TrendingUp,
+  UserCheck,
+  Zap,
+  LucideIcon,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAvailableRides } from "../hooks/useRides";
 import { useStats } from "../hooks/useStats";
+import { useMessages } from "../state/useMessages";
 
 const Home = () => {
-  const { data: availableRides, isLoading: ridesLoading, error: ridesError } = useAvailableRides();
+  const messages = useMessages();
+  console.log("Messages:", messages.data);
+  const {
+    data: availableRides,
+    isLoading: ridesLoading,
+    error: ridesError,
+  } = useAvailableRides();
   const { data: stats, isLoading: statsLoading } = useStats();
 
-  const StatCard = ({ title, value, icon: Icon, description }: {
+  const StatCard = ({
+    title,
+    value,
+    icon: Icon,
+    description,
+  }: {
     title: string;
     value: string | number;
-    icon: any;
+    icon: LucideIcon;
     description: string;
   }) => (
     <Card>
@@ -43,7 +70,8 @@ const Home = () => {
             Share the Ride, Share the Cost
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Connect with fellow travelers and make every journey affordable and eco-friendly
+            Connect with fellow travelers and make every journey affordable and
+            eco-friendly
           </p>
           <div className="flex justify-center space-x-4">
             <Link to="/add-ride">
@@ -75,7 +103,7 @@ const Home = () => {
           />
           <StatCard
             title="Money Saved"
-            value={stats?.totalSavings ? `$${stats.totalSavings}` : '$0'}
+            value={stats?.totalSavings ? `$${stats.totalSavings}` : "$0"}
             icon={DollarSign}
             description="Total savings this month"
           />
@@ -90,12 +118,14 @@ const Home = () => {
         {/* Available Rides Section */}
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Available Rides</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Available Rides
+            </h2>
             <Link to="/my-rides">
               <Button variant="outline">View All Rides</Button>
             </Link>
           </div>
-          
+
           {ridesLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
@@ -116,26 +146,38 @@ const Home = () => {
 
           {ridesError && (
             <div className="text-center py-8">
-              <p className="text-red-600">Error loading available rides. Please try again.</p>
+              <p className="text-red-600">
+                Error loading available rides. Please try again.
+              </p>
             </div>
           )}
 
           {availableRides && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {availableRides.slice(0, 6).map((ride) => (
-                <Card key={ride.id} className="hover:shadow-lg transition-shadow">
+                <Card
+                  key={ride.id}
+                  className="hover:shadow-lg transition-shadow"
+                >
                   <CardHeader>
                     <CardTitle className="text-lg">{ride.driver}</CardTitle>
-                    <CardDescription>{new Date(ride.date).toLocaleDateString()}</CardDescription>
+                    <CardDescription>
+                      {new Date(ride.date).toLocaleDateString()}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center space-x-2">
                       <MapPin className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm">From <strong>{ride.from}</strong> to <strong>{ride.to}</strong></span>
+                      <span className="text-sm">
+                        From <strong>{ride.from}</strong> to{" "}
+                        <strong>{ride.to}</strong>
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm">Departure: <strong>{ride.time}</strong></span>
+                      <span className="text-sm">
+                        Departure: <strong>{ride.time}</strong>
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
@@ -159,21 +201,28 @@ const Home = () => {
               <DollarSign className="h-8 w-8 text-blue-600" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Save Money</h3>
-            <p className="text-gray-600">Split fuel costs and reduce your travel expenses significantly</p>
+            <p className="text-gray-600">
+              Split fuel costs and reduce your travel expenses significantly
+            </p>
           </div>
           <div className="text-center">
             <div className="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <Users className="h-8 w-8 text-green-600" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Meet People</h3>
-            <p className="text-gray-600">Connect with like-minded travelers and build new friendships</p>
+            <p className="text-gray-600">
+              Connect with like-minded travelers and build new friendships
+            </p>
           </div>
           <div className="text-center">
             <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <Zap className="h-8 w-8 text-purple-600" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Go Green</h3>
-            <p className="text-gray-600">Reduce carbon footprint by sharing rides and helping the environment</p>
+            <p className="text-gray-600">
+              Reduce carbon footprint by sharing rides and helping the
+              environment
+            </p>
           </div>
         </div>
       </div>
