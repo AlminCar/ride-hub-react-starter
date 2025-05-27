@@ -18,7 +18,6 @@ import { useMessages } from './state/useMessages'
 const queryClient = new QueryClient();
 
 const App = () => {
-console.log(useMessages)
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
