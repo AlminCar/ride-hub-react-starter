@@ -55,7 +55,27 @@
         "perPerson": 15,
         "fuelCost": 30,
         "tollsCost": 15
-      }
+      },
+      "payments": [
+        {
+          "id": 1,
+          "passengerName": "Sarah Wilson",
+          "passengerAvatar": "/placeholder-avatar.jpg",
+          "amount": 15,
+          "status": "confirmed",
+          "dueDate": "2024-01-15",
+          "paidDate": "2024-01-14",
+          "method": "Digital Wallet"
+        },
+        {
+          "id": 2,
+          "passengerName": "Mike Johnson",
+          "passengerAvatar": "/placeholder-avatar.jpg",
+          "amount": 15,
+          "status": "pending",
+          "dueDate": "2024-01-15"
+        }
+      ]
     },
     {
       "id": 2,
@@ -89,7 +109,29 @@
         "perPerson": 8,
         "fuelCost": 20,
         "tollsCost": 4
-      }
+      },
+      "payments": [
+        {
+          "id": 3,
+          "passengerName": "David Chen",
+          "passengerAvatar": "/placeholder-avatar.jpg",
+          "amount": 8,
+          "status": "confirmed",
+          "dueDate": "2024-01-16",
+          "paidDate": "2024-01-15",
+          "method": "Cash"
+        },
+        {
+          "id": 4,
+          "passengerName": "Lisa Brown",
+          "passengerAvatar": "/placeholder-avatar.jpg",
+          "amount": 8,
+          "status": "confirmed",
+          "dueDate": "2024-01-16",
+          "paidDate": "2024-01-15",
+          "method": "Bank Transfer"
+        }
+      ]
     }
   ],
   "myBookedRides": [

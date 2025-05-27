@@ -12,6 +12,7 @@ import Analytics from "./pages/Analytics";
 import Messages from "./pages/Messages";
 import UserProfile from "./pages/UserProfile";
 import Map from "./pages/Map";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/messages" element={<Messages />} />
               <Route path="/map" element={<Map />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

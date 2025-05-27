@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Clock, Users, DollarSign, Calendar } from "lucide-react";
+import { MapPin, Clock, Users, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CostInput } from "../components/CostInput";
 
 const AddNewRide = () => {
   const { toast } = useToast();
@@ -17,12 +18,20 @@ const AddNewRide = () => {
     date: "",
     time: "",
     seats: "",
-    price: "",
     description: ""
+  });
+  
+  const [costBreakdown, setCostBreakdown] = useState({
+    fuelCost: 0,
+    parkingCost: 0,
+    tollsCost: 0,
+    totalCost: 0,
+    perPerson: 0
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Ride data:', { ...formData, costBreakdown });
     toast({
       title: "Ride Posted Successfully!",
       description: "Your ride has been added and is now visible to other users.",
@@ -34,14 +43,26 @@ const AddNewRide = () => {
       date: "",
       time: "",
       seats: "",
-      price: "",
       description: ""
+    });
+    setCostBreakdown({
+      fuelCost: 0,
+      parkingCost: 0,
+      tollsCost: 0,
+      totalCost: 0,
+      perPerson: 0
     });
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleCostUpdate = (costs: any) => {
+    setCostBreakdown(costs);
+  };
+
+  const seatCount = parseInt(formData.seats) || 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,15 +74,15 @@ const AddNewRide = () => {
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Ride Details</CardTitle>
-            <CardDescription>
-              Fill in the information about your upcoming trip
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Ride Details</CardTitle>
+              <CardDescription>
+                Fill in the information about your upcoming trip
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               {/* Route Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -122,42 +143,24 @@ const AddNewRide = () => {
                 </div>
               </div>
 
-              {/* Seats and Price */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="seats" className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-purple-600" />
-                    <span>Available Seats</span>
-                  </Label>
-                  <Select value={formData.seats} onValueChange={(value) => handleInputChange("seats", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select number of seats" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="1">1 seat</SelectItem>
-                      <SelectItem value="2">2 seats</SelectItem>
-                      <SelectItem value="3">3 seats</SelectItem>
-                      <SelectItem value="4">4 seats</SelectItem>
-                      <SelectItem value="5">5 seats</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price" className="flex items-center space-x-2">
-                    <DollarSign className="h-4 w-4 text-green-600" />
-                    <span>Price per Person</span>
-                  </Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange("price", e.target.value)}
-                    required
-                  />
-                </div>
+              {/* Seats */}
+              <div className="space-y-2">
+                <Label htmlFor="seats" className="flex items-center space-x-2">
+                  <Users className="h-4 w-4 text-purple-600" />
+                  <span>Available Seats</span>
+                </Label>
+                <Select value={formData.seats} onValueChange={(value) => handleInputChange("seats", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select number of seats" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="1">1 seat</SelectItem>
+                    <SelectItem value="2">2 seats</SelectItem>
+                    <SelectItem value="3">3 seats</SelectItem>
+                    <SelectItem value="4">4 seats</SelectItem>
+                    <SelectItem value="5">5 seats</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Description */}
@@ -171,19 +174,25 @@ const AddNewRide = () => {
                   rows={4}
                 />
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Submit Button */}
-              <div className="flex justify-end space-x-4">
-                <Button type="button" variant="outline">
-                  Save as Draft
-                </Button>
-                <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                  Post Ride
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+          {/* Cost Input */}
+          <CostInput
+            onCostUpdate={handleCostUpdate}
+            passengerCount={seatCount}
+          />
+
+          {/* Submit Buttons */}
+          <div className="flex justify-end space-x-4">
+            <Button type="button" variant="outline">
+              Save as Draft
+            </Button>
+            <Button type="submit" className="bg-green-600 hover:bg-green-700">
+              Post Ride
+            </Button>
+          </div>
+        </form>
 
         {/* Tips Card */}
         <Card className="mt-6">
@@ -197,6 +206,7 @@ const AddNewRide = () => {
               <li>• Be clear about pickup and drop-off points</li>
               <li>• Respect passengers' preferences (music, temperature, etc.)</li>
               <li>• Ensure you have proper insurance coverage</li>
+              <li>• Set fair cost sharing to cover your expenses</li>
             </ul>
           </CardContent>
         </Card>
