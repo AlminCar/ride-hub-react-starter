@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,34 +13,38 @@ import UserProfile from "./pages/UserProfile";
 import Map from "./pages/Map";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import { useMessages } from './state/useMessages'
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen bg-gray-50">
-          <Header />
-          <main className="pt-16">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/my-rides" element={<MyRides />} />
-              <Route path="/add-ride" element={<AddNewRide />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/map" element={<Map />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+console.log(useMessages)
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen bg-gray-50">
+            <Header />
+            <main className="pt-16">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/my-rides" element={<MyRides />} />
+                <Route path="/add-ride" element={<AddNewRide />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/map" element={<Map />} />
+                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
