@@ -17,22 +17,25 @@ import {
   TrendingUp,
   UserCheck,
   Zap,
-  LucideIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAvailableRides } from "../hooks/useRides";
+import { useAvailableRides, useUpdateAvailableRides } from "../hooks/useRides";
 import { useStats } from "../hooks/useStats";
-import { useMessages } from "../state/useMessages";
+import { useState } from "react";
+import ConfirmationModal from "../components/ConfirmationModal.tsx";
+import { useCostSharing } from "../state/costSharing";
 
 const Home = () => {
-  const messages = useMessages();
-  console.log("Messages:", messages.data);
   const {
     data: availableRides,
     isLoading: ridesLoading,
     error: ridesError,
   } = useAvailableRides();
+  const { mutate: updateAvailableRides } = useUpdateAvailableRides();
   const { data: stats, isLoading: statsLoading } = useStats();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRide, setSelectedRide] = useState<any>(null);
+  const { updateSeats } = useCostSharing();
 
   const StatCard = ({
     title,
@@ -80,10 +83,12 @@ const Home = () => {
                 Offer a Ride
               </Button>
             </Link>
-            <Button variant="outline" size="lg">
-              <Users className="mr-2 h-5 w-5" />
-              Find a Ride
-            </Button>
+            <Link to="/my-rides">
+              <Button variant="outline" size="lg">
+                <Users className="mr-2 h-5 w-5" />
+                Find a Ride
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -186,13 +191,50 @@ const Home = () => {
                       </div>
                       <Badge variant="secondary">${ride.price}</Badge>
                     </div>
-                    <Button className="w-full">Apply for Ride</Button>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        setSelectedRide(ride);
+                        setModalOpen(true);
+                      }}
+                    >
+                      Apply for Ride
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
           )}
         </div>
+        {modalOpen && selectedRide && (
+          <ConfirmationModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            onConfirm={() => {
+              const newAvailableRides = availableRides.map((ride) => {
+                if (ride.id === selectedRide.id) {
+                  return {
+                    ...selectedRide,
+                    seats: selectedRide.seats - 1,
+                  };
+                }
+                return ride;
+              });
+
+              // @ts-ignore
+              updateAvailableRides([...newAvailableRides]);
+              setModalOpen(false);
+            }}
+            title="Apply for Ride"
+            message={`Are you sure you want to apply for the ride from ${selectedRide.from} to ${selectedRide.to}?`}
+            breakdown={{
+              totalCost: selectedRide.price,
+              perPerson: selectedRide.price / selectedRide.seats,
+              fuelCost: selectedRide.fuelCost || 0,
+              tollsCost: selectedRide.tollsCost || 0,
+            }}
+          />
+        )}
 
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
