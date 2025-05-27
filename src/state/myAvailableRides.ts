@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { availableRides } from "@/data/rides.json";
 
 export function useMyAvailableRides() {
@@ -19,3 +19,28 @@ export function useMyAvailableRides() {
     ...myAvailableRidesData,
   };
 }
+
+export const useUpdateAvailableRides = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newData) => {
+      return null;
+    },
+    onSuccess: (_, newData: any) => {
+      queryClient.setQueryData(["myAvailableRides"], newData.newAvailableRides);
+
+      queryClient.setQueryData(["myBookedRides"], (old: any[] = []) => [
+          ...old,
+          {
+            ...newData.selectedRide,
+            driverAvatar: "/placeholder-avatar.jpg",
+            status: "waitlisted",
+            appliedAt: new Date().toISOString(),
+            costShare: 0,
+            pickupLocation: "",
+          },
+        ]
+      );
+    },
+  });
+};

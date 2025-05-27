@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,11 +29,20 @@ export const CostInput = ({
   initialCosts,
   passengerCount,
 }: CostInputProps) => {
+  console.log("CostInput", initialCosts, passengerCount);
   const [fuelCost, setFuelCost] = useState(initialCosts?.fuelCost || 0);
   const [parkingCost, setParkingCost] = useState(
     initialCosts?.parkingCost || 0
   );
   const [tollsCost, setTollsCost] = useState(initialCosts?.tollsCost || 0);
+
+  useEffect(() => {
+    if (initialCosts) {
+      setFuelCost(initialCosts.fuelCost || 0);
+      setParkingCost(initialCosts.parkingCost || 0);
+      setTollsCost(initialCosts.tollsCost || 0);
+    }
+  }, [initialCosts]);
 
   const calculateCosts = (fuel: number, parking: number, tolls: number) => {
     const total = fuel + parking + tolls;

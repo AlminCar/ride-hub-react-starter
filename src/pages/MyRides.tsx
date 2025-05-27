@@ -30,13 +30,18 @@ import {
   DollarSign,
   Loader2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useApplicantAction, useCancelRide } from "../hooks/useRides";
+import { Link, useNavigate } from "react-router-dom";
 import { ApplicantManagement } from "../components/ApplicantManagement";
 import { CostBreakdown } from "../components/CostBreakdown";
-import { useMyAvailableRides } from "@/state/myAvailableRides";
-import { useMyOfferedRides } from "@/state/myOfferedRides";
-import { useMyBookedRides } from "@/state/myBookedRides";
+import {
+  useApplicantAction,
+  useMyOfferedRides,
+  useDeleteMyOfferedRideAction,
+} from "@/state/myOfferedRides";
+import {
+  useMyBookedRides,
+  useCancelMyBookedRideRide,
+} from "@/state/myBookedRides";
 import { useMyPastRides } from "@/state/myPastRides";
 
 const MyRides = () => {
@@ -55,19 +60,10 @@ const MyRides = () => {
     isLoading: pastLoading,
     error: pastError,
   } = useMyPastRides();
-  const {
-    data: myAvailableRides,
-    isLoading: availableLoading,
-    error: availableError,
-  } = useMyAvailableRides();
 
-  console.log("My booked rides component rendered", myBookedRides);
-  console.log("My available rides component rendered", myAvailableRides);
-  console.log("My offered rides component rendered", myOfferedRides);
-  console.log("My past rides component rendered", myPastRides);
-
-  const applicantActionMutation = useApplicantAction();
-  const cancelRideMutation = useCancelRide();
+  const { mutate: applicantActionMutation } = useApplicantAction();
+  const { mutate: cancelRideMutation, isPending } = useCancelMyBookedRideRide();
+  const { mutate: cancelMyOfferedRide } = useDeleteMyOfferedRideAction();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -90,7 +86,21 @@ const MyRides = () => {
   };
 
   const handleCancelRide = (rideId: number, type: string) => {
-    cancelRideMutation.mutate({ rideId, type });
+    if (type === "offered") {
+      cancelMyOfferedRide(rideId);
+    }
+    if (type === "booked") {
+      cancelRideMutation({ rideId, type });
+    }
+  };
+  const navigate = useNavigate();
+
+  const goToViewDetailsPage = (id: string) => {
+    navigate(`/view-details-of-past-rides/${id}`);
+  };
+
+  const goToEditRidePage = (id: string) => {
+    navigate(`/edit-ride/${id}`);
   };
 
   const handleApplicantAction = (
@@ -98,7 +108,7 @@ const MyRides = () => {
     applicantId: number,
     action: "accept" | "decline"
   ) => {
-    applicantActionMutation.mutate({ rideId, applicantId, action });
+    applicantActionMutation({ rideId, applicantId, action });
   };
 
   const LoadingSkeleton = () => (
@@ -202,7 +212,11 @@ const MyRides = () => {
 
                       <div className="flex justify-between items-center pt-2">
                         <div className="space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => goToEditRidePage(ride.id)}
+                          >
                             Edit
                           </Button>
                           <Button variant="outline" size="sm">
@@ -215,9 +229,9 @@ const MyRides = () => {
                             <Button
                               variant="destructive"
                               size="sm"
-                              disabled={cancelRideMutation.isPending}
+                              disabled={isPending}
                             >
-                              {cancelRideMutation.isPending && (
+                              {isPending && (
                                 <Loader2 className="mr-1 h-3 w-3 animate-spin" />
                               )}
                               Cancel
@@ -430,7 +444,11 @@ const MyRides = () => {
                         </div>
                       )}
                       <div className="flex justify-end pt-2">
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => goToViewDetailsPage(ride.id)}
+                        >
                           View Details
                         </Button>
                       </div>

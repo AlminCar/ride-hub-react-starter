@@ -23,8 +23,15 @@ import { CostInput } from "../components/CostInput";
 import { useAdministration } from "@/state/administration";
 import { useCreateMyOfferedRideAction } from "@/state/myOfferedRides.ts";
 import { useNavigate } from "react-router-dom";
+import { useMyOfferedRides } from "@/state/myOfferedRides";
+import { useMyBookedRides } from "@/state/myBookedRides";
+import { useMyPastRides } from "@/state/myPastRides";
+import { isWithinInterval } from "date-fns";
 
-const AddNewRide = () => {
+const ViewEditRide = () => {
+  const { data: myOfferedRides } = useMyOfferedRides();
+  const { data: myBookedRides } = useMyBookedRides();
+  const { data: myPastRides } = useMyPastRides();
   const { data: administrationState } = useAdministration();
   const { mutate: createRide, isSuccess } = useCreateMyOfferedRideAction();
   const { toast } = useToast();
@@ -46,6 +53,11 @@ const AddNewRide = () => {
   });
   const navigate = useNavigate();
 
+  const isViewMode = window.location.pathname.includes(
+    "view-details-of-past-rides"
+  );
+  const isEditMode = window.location.pathname.includes("edit-ride");
+
   const resetForm = () => {
     // Reset form
     setFormData({
@@ -64,6 +76,34 @@ const AddNewRide = () => {
       perPerson: 0,
     });
   };
+
+  useEffect(() => {
+    const rideId = window.location.pathname.split("/").pop();
+    const ride = isEditMode
+      ? myOfferedRides.find((r) => r.id === parseInt(rideId))
+      : myPastRides.find((r) => r.id === parseInt(rideId)) ||
+        myBookedRides.find((r) => r.id === parseInt(rideId));
+    if (ride) {
+      console.log("Ride found:", ride);
+      setFormData({
+        from: ride.from,
+        to: ride.to,
+        date: ride.date,
+        time: ride.time,
+        seats: ride.seats?.toString() || "",
+        description: ride.description || "",
+      });
+      if (isEditMode) {
+        setCostBreakdown({
+          fuelCost: ride.costBreakdown.fuelCost || 0,
+          parkingCost: ride.costBreakdown.parkingCost || 0,
+          tollsCost: ride.costBreakdown.tollsCost || 0,
+          totalCost: ride.costBreakdown.totalCost || 0,
+          perPerson: ride.costBreakdown.perPerson || 0,
+        });
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (isSuccess) {
@@ -96,19 +136,20 @@ const AddNewRide = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Add New Ride</h1>
-          <p className="text-gray-600 mt-2">
-            Offer a ride to help others and share travel costs
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isViewMode ? "Previous ride" : "Edit your offered ride"}
+          </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Ride Details</CardTitle>
-              <CardDescription>
-                Fill in the information about your upcoming trip
-              </CardDescription>
+              {isEditMode && (
+                <CardDescription>
+                  Fill in the information about your upcoming trip
+                </CardDescription>
+              )}
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Route Information */}
@@ -211,45 +252,48 @@ const AddNewRide = () => {
           </Card>
 
           {/* Cost Input */}
-          {administrationState.costSharing && (
+          {administrationState.costSharing && isEditMode && (
             <CostInput
               onCostUpdate={handleCostUpdate}
               passengerCount={seatCount}
+              initialCosts={costBreakdown}
             />
           )}
 
-          {/* Submit Buttons */}
-          <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline">
-              Save as Draft
-            </Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700">
-              Post Ride
-            </Button>
-          </div>
+          {isEditMode && (
+            <div className="flex justify-end space-x-4">
+              <Button type="button" variant="outline">
+                Save as Draft
+              </Button>
+              <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                Post Ride
+              </Button>
+            </div>
+          )}
         </form>
 
-        {/* Tips Card */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Tips for a Great Ride</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>• Be punctual and communicate any delays</li>
-              <li>• Keep your car clean and comfortable</li>
-              <li>• Be clear about pickup and drop-off points</li>
-              <li>
-                • Respect passengers' preferences (music, temperature, etc.)
-              </li>
-              <li>• Ensure you have proper insurance coverage</li>
-              <li>• Set fair cost sharing to cover your expenses</li>
-            </ul>
-          </CardContent>
-        </Card>
+        {isEditMode && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-lg">Tips for a Great Ride</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Be punctual and communicate any delays</li>
+                <li>• Keep your car clean and comfortable</li>
+                <li>• Be clear about pickup and drop-off points</li>
+                <li>
+                  • Respect passengers' preferences (music, temperature, etc.)
+                </li>
+                <li>• Ensure you have proper insurance coverage</li>
+                <li>• Set fair cost sharing to cover your expenses</li>
+              </ul>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
 };
 
-export default AddNewRide;
+export default ViewEditRide;

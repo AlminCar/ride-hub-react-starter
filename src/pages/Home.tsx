@@ -19,23 +19,24 @@ import {
   Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAvailableRides, useUpdateAvailableRides } from "../hooks/useRides";
+import {
+  useMyAvailableRides,
+  useUpdateAvailableRides,
+} from "@/state/myAvailableRides.ts";
 import { useStats } from "../hooks/useStats";
 import { useState } from "react";
 import ConfirmationModal from "../components/ConfirmationModal.tsx";
-import { useCostSharing } from "../state/costSharing";
 
 const Home = () => {
   const {
     data: availableRides,
     isLoading: ridesLoading,
     error: ridesError,
-  } = useAvailableRides();
+  } = useMyAvailableRides();
   const { mutate: updateAvailableRides } = useUpdateAvailableRides();
   const { data: stats, isLoading: statsLoading } = useStats();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedRide, setSelectedRide] = useState<any>(null);
-  const { updateSeats } = useCostSharing();
 
   const StatCard = ({
     title,
@@ -221,8 +222,9 @@ const Home = () => {
                 return ride;
               });
 
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              updateAvailableRides([...newAvailableRides]);
+              updateAvailableRides({ selectedRide, newAvailableRides: [...newAvailableRides]});
               setModalOpen(false);
             }}
             title="Apply for Ride"
