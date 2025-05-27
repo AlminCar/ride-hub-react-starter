@@ -1,16 +1,29 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { MapPin, Clock, Users, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CostInput } from "../components/CostInput";
+import { useAdministration } from "@/state/administration";
 
 const AddNewRide = () => {
+  const { data: administrationState } = useAdministration();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     from: "",
@@ -18,23 +31,24 @@ const AddNewRide = () => {
     date: "",
     time: "",
     seats: "",
-    description: ""
+    description: "",
   });
-  
+
   const [costBreakdown, setCostBreakdown] = useState({
     fuelCost: 0,
     parkingCost: 0,
     tollsCost: 0,
     totalCost: 0,
-    perPerson: 0
+    perPerson: 0,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Ride data:', { ...formData, costBreakdown });
+    console.log("Ride data:", { ...formData, costBreakdown });
     toast({
       title: "Ride Posted Successfully!",
-      description: "Your ride has been added and is now visible to other users.",
+      description:
+        "Your ride has been added and is now visible to other users.",
     });
     // Reset form
     setFormData({
@@ -43,19 +57,19 @@ const AddNewRide = () => {
       date: "",
       time: "",
       seats: "",
-      description: ""
+      description: "",
     });
     setCostBreakdown({
       fuelCost: 0,
       parkingCost: 0,
       tollsCost: 0,
       totalCost: 0,
-      perPerson: 0
+      perPerson: 0,
     });
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCostUpdate = (costs) => {
@@ -149,7 +163,10 @@ const AddNewRide = () => {
                   <Users className="h-4 w-4 text-purple-600" />
                   <span>Available Seats</span>
                 </Label>
-                <Select value={formData.seats} onValueChange={(value) => handleInputChange("seats", value)}>
+                <Select
+                  value={formData.seats}
+                  onValueChange={(value) => handleInputChange("seats", value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select number of seats" />
                   </SelectTrigger>
@@ -170,7 +187,9 @@ const AddNewRide = () => {
                   id="description"
                   placeholder="Any additional details about your ride (meeting point, preferences, etc.)"
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   rows={4}
                 />
               </div>
@@ -178,10 +197,12 @@ const AddNewRide = () => {
           </Card>
 
           {/* Cost Input */}
-          <CostInput
-            onCostUpdate={handleCostUpdate}
-            passengerCount={seatCount}
-          />
+          {administrationState.costSharing && (
+            <CostInput
+              onCostUpdate={handleCostUpdate}
+              passengerCount={seatCount}
+            />
+          )}
 
           {/* Submit Buttons */}
           <div className="flex justify-end space-x-4">
@@ -204,7 +225,9 @@ const AddNewRide = () => {
               <li>• Be punctual and communicate any delays</li>
               <li>• Keep your car clean and comfortable</li>
               <li>• Be clear about pickup and drop-off points</li>
-              <li>• Respect passengers' preferences (music, temperature, etc.)</li>
+              <li>
+                • Respect passengers' preferences (music, temperature, etc.)
+              </li>
               <li>• Ensure you have proper insurance coverage</li>
               <li>• Set fair cost sharing to cover your expenses</li>
             </ul>

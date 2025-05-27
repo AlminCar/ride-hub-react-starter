@@ -13,7 +13,6 @@ import UserProfile from "./pages/UserProfile";
 import Map from "./pages/Map";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
-import { useMessages } from './state/useMessages'
 
 const queryClient = new QueryClient();
 

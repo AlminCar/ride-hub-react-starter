@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,35 +8,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Shield,
-  Users,
-  MessageSquare,
-  Settings,
+  useAdministration,
+  useUpdateAdministration,
+} from "@/state/administration";
+import type { PendingUserType, ReportedIssueType } from "@/types/admin";
+import {
   AlertTriangle,
   CheckCircle,
+  MessageSquare,
+  Settings,
+  Shield,
+  Users,
   XCircle,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import type { PendingUserType, ReportedIssueType } from "@/types/admin";
-
 
 const Admin = () => {
+  const { data: featureFlags } = useAdministration();
+  const { mutateAsync } = useUpdateAdministration();
   const [searchTerm, setSearchTerm] = useState("");
-  const [featureFlags, setFeatureFlags] = useState({
-    mapIntegration: true,
-    realTimeMessaging: true,
-    pushNotifications: false,
-    costSharing: true,
-    adminReporting: true,
-  });
   const [pendingUsers, setPendingUsers] = useState<PendingUserType[]>([
     {
       id: 1,
@@ -74,22 +72,29 @@ const Admin = () => {
     },
   ]);
 
-
   const handleUserApproval = (userId: number, action: "approve" | "reject") => {
-    const user = pendingUsers.find((pendingUser) => pendingUser.id === userId)
-    setPendingUsers(pendingUsers.filter((pendingUser) => pendingUser.id !== userId));
+    const user = pendingUsers.find((pendingUser) => pendingUser.id === userId);
+    setPendingUsers(
+      pendingUsers.filter((pendingUser) => pendingUser.id !== userId)
+    );
     toast.success(`User ${user.name} ${action}d`);
   };
 
   const handleIssueResolution = (issueId: number, action: string) => {
-    const issue = reportedIssues.find((reportedIssue) => reportedIssue.id === issueId)
-    setReportedIssues(reportedIssues.filter((reportedIssue) => reportedIssue.id !== issueId));
-    toast.success(`Issue ${issue.subject} ${action}d`)
+    const issue = reportedIssues.find(
+      (reportedIssue) => reportedIssue.id === issueId
+    );
+    setReportedIssues(
+      reportedIssues.filter((reportedIssue) => reportedIssue.id !== issueId)
+    );
+    toast.success(`Issue ${issue.subject} ${action}d`);
   };
 
   const handleFeatureToggle = (feature: string, enabled: boolean) => {
-    setFeatureFlags((prev) => ({ ...prev, [feature]: enabled }));
-    console.log(`Feature ${feature} ${enabled ? "enabled" : "disabled"}`);
+    const newState = { ...featureFlags, [feature]: enabled };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutateAsync(newState as any);
+    toast.success(`Feature ${feature} ${enabled ? "enabled" : "disabled"}`);
   };
 
   return (
