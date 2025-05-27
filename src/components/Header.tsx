@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, Car, BarChart, MessageCircle, User, LogOut } from "lucide-react";
+import { Menu, X, Home, Car, BarChart, MessageCircle, User, LogOut, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ export const Header = () => {
   const navigation = [
     { name: "Home", href: "/", icon: Home },
     { name: "My Rides", href: "/my-rides", icon: Car },
+    { name: "Map", href: "/map", icon: MapPin },
     { name: "Analytics", href: "/analytics", icon: BarChart },
   ];
 

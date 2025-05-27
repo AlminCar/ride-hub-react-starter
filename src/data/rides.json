@@ -1,0 +1,145 @@
+
+{
+  "availableRides": [
+    {
+      "id": 1,
+      "from": "Downtown",
+      "to": "Airport",
+      "time": "2:30 PM",
+      "seats": 2,
+      "driver": "Alice Johnson",
+      "price": 15,
+      "date": "2024-01-15"
+    },
+    {
+      "id": 2,
+      "from": "University",
+      "to": "Mall",
+      "time": "4:15 PM",
+      "seats": 3,
+      "driver": "Bob Smith",
+      "price": 12,
+      "date": "2024-01-15"
+    }
+  ],
+  "myOfferedRides": [
+    {
+      "id": 1,
+      "from": "Downtown",
+      "to": "Airport",
+      "date": "2024-01-15",
+      "time": "2:30 PM",
+      "seats": 3,
+      "booked": 1,
+      "status": "active",
+      "applicants": [
+        {
+          "id": 1,
+          "name": "Sarah Wilson",
+          "avatar": "/placeholder-avatar.jpg",
+          "status": "accepted",
+          "appliedAt": "2024-01-14T10:30:00Z",
+          "message": "Hi! I need to catch a flight at 4 PM. Thanks!"
+        },
+        {
+          "id": 2,
+          "name": "Mike Johnson",
+          "avatar": "/placeholder-avatar.jpg",
+          "status": "pending",
+          "appliedAt": "2024-01-14T14:20:00Z",
+          "message": "Can I join? I'm flexible with pickup location."
+        }
+      ],
+      "costBreakdown": {
+        "totalCost": 45,
+        "perPerson": 15,
+        "fuelCost": 30,
+        "tollsCost": 15
+      }
+    },
+    {
+      "id": 2,
+      "from": "Home",
+      "to": "Office",
+      "date": "2024-01-16",
+      "time": "8:00 AM",
+      "seats": 2,
+      "booked": 2,
+      "status": "full",
+      "applicants": [
+        {
+          "id": 3,
+          "name": "David Chen",
+          "avatar": "/placeholder-avatar.jpg",
+          "status": "accepted",
+          "appliedAt": "2024-01-13T16:45:00Z",
+          "message": "Regular commute partner needed!"
+        },
+        {
+          "id": 4,
+          "name": "Lisa Brown",
+          "avatar": "/placeholder-avatar.jpg",
+          "status": "accepted",
+          "appliedAt": "2024-01-13T18:20:00Z",
+          "message": "Perfect timing for my work schedule."
+        }
+      ],
+      "costBreakdown": {
+        "totalCost": 24,
+        "perPerson": 8,
+        "fuelCost": 20,
+        "tollsCost": 4
+      }
+    }
+  ],
+  "myBookedRides": [
+    {
+      "id": 3,
+      "from": "University",
+      "to": "Shopping Center",
+      "date": "2024-01-17",
+      "time": "3:00 PM",
+      "driver": "Sarah Wilson",
+      "driverAvatar": "/placeholder-avatar.jpg",
+      "status": "accepted",
+      "appliedAt": "2024-01-14T11:30:00Z",
+      "costShare": 10,
+      "pickupLocation": "Main University Gate"
+    },
+    {
+      "id": 4,
+      "from": "Mall",
+      "to": "Downtown",
+      "date": "2024-01-18",
+      "time": "6:00 PM",
+      "driver": "Tom Anderson",
+      "driverAvatar": "/placeholder-avatar.jpg",
+      "status": "waitlisted",
+      "appliedAt": "2024-01-15T09:15:00Z",
+      "costShare": 8,
+      "pickupLocation": "Mall Main Entrance"
+    }
+  ],
+  "pastRides": [
+    {
+      "id": 4,
+      "from": "Airport",
+      "to": "Downtown",
+      "date": "2024-01-10",
+      "time": "6:00 PM",
+      "type": "offered",
+      "passengers": 2,
+      "earnings": 30
+    },
+    {
+      "id": 5,
+      "from": "Mall",
+      "to": "Home",
+      "date": "2024-01-08",
+      "time": "9:30 PM",
+      "type": "booked",
+      "driver": "Mike Johnson",
+      "costPaid": 12
+    }
+  ]
+}

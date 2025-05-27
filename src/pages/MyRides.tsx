@@ -1,67 +1,20 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Car, MessageCircle } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { MapPin, Clock, Users, Car, MessageCircle, Check, X, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
+import ridesData from "../data/rides.json";
+import { ApplicantManagement } from "../components/ApplicantManagement";
+import { CostBreakdown } from "../components/CostBreakdown";
 
 const MyRides = () => {
-  const myOfferedRides = [
-    {
-      id: 1,
-      from: "Downtown",
-      to: "Airport",
-      date: "2024-01-15",
-      time: "2:30 PM",
-      seats: 3,
-      booked: 1,
-      status: "active"
-    },
-    {
-      id: 2,
-      from: "Home",
-      to: "Office",
-      date: "2024-01-16",
-      time: "8:00 AM",
-      seats: 2,
-      booked: 2,
-      status: "full"
-    }
-  ];
-
-  const myBookedRides = [
-    {
-      id: 3,
-      from: "University",
-      to: "Shopping Center",
-      date: "2024-01-17",
-      time: "3:00 PM",
-      driver: "Sarah Wilson",
-      status: "confirmed"
-    }
-  ];
-
-  const pastRides = [
-    {
-      id: 4,
-      from: "Airport",
-      to: "Downtown",
-      date: "2024-01-10",
-      time: "6:00 PM",
-      type: "offered",
-      passengers: 2
-    },
-    {
-      id: 5,
-      from: "Mall",
-      to: "Home",
-      date: "2024-01-08",
-      time: "9:30 PM",
-      type: "booked",
-      driver: "Mike Johnson"
-    }
-  ];
+  const { myOfferedRides, myBookedRides, pastRides } = ridesData;
+  const [selectedRide, setSelectedRide] = useState(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -70,10 +23,27 @@ const MyRides = () => {
       case "full":
         return "bg-blue-100 text-blue-800";
       case "confirmed":
+      case "accepted":
         return "bg-green-100 text-green-800";
+      case "waitlisted":
+        return "bg-yellow-100 text-yellow-800";
+      case "declined":
+        return "bg-red-100 text-red-800";
+      case "pending":
+        return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const handleCancelRide = (rideId: number, type: string) => {
+    console.log(`Cancelling ${type} ride ${rideId}`);
+    // Implementation for ride cancellation
+  };
+
+  const handleApplicantAction = (rideId: number, applicantId: number, action: 'accept' | 'decline') => {
+    console.log(`${action} applicant ${applicantId} for ride ${rideId}`);
+    // Implementation for applicant management
   };
 
   return (
@@ -130,6 +100,17 @@ const MyRides = () => {
                         <strong>{ride.booked}</strong> of <strong>{ride.seats}</strong> seats booked
                       </span>
                     </div>
+                    
+                    {ride.applicants && ride.applicants.length > 0 && (
+                      <ApplicantManagement 
+                        applicants={ride.applicants}
+                        onAction={handleApplicantAction}
+                        rideId={ride.id}
+                      />
+                    )}
+                    
+                    <CostBreakdown breakdown={ride.costBreakdown} />
+                    
                     <div className="flex justify-between items-center pt-2">
                       <div className="space-x-2">
                         <Button variant="outline" size="sm">
@@ -140,9 +121,27 @@ const MyRides = () => {
                           Messages
                         </Button>
                       </div>
-                      <Button variant="destructive" size="sm">
-                        Cancel
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            Cancel
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Cancel Ride</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to cancel this ride? All accepted passengers will be notified.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Keep Ride</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleCancelRide(ride.id, 'offered')}>
+                              Cancel Ride
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>
@@ -161,8 +160,12 @@ const MyRides = () => {
                         {ride.status}
                       </Badge>
                     </div>
-                    <CardDescription>
-                      Driver: {ride.driver}
+                    <CardDescription className="flex items-center space-x-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={ride.driverAvatar} alt={ride.driver} />
+                        <AvatarFallback className="text-xs">{ride.driver.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <span>Driver: {ride.driver}</span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -178,14 +181,47 @@ const MyRides = () => {
                         <strong>{new Date(ride.date).toLocaleDateString()}</strong> at <strong>{ride.time}</strong>
                       </span>
                     </div>
+                    {ride.status === 'accepted' && (
+                      <>
+                        <div className="flex items-center space-x-2">
+                          <DollarSign className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm">
+                            Cost Share: <strong>${ride.costShare}</strong>
+                          </span>
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg">
+                          <p className="text-sm text-green-800">
+                            <strong>Pickup:</strong> {ride.pickupLocation}
+                          </p>
+                        </div>
+                      </>
+                    )}
                     <div className="flex justify-between items-center pt-2">
                       <Button variant="outline" size="sm">
                         <MessageCircle className="mr-1 h-3 w-3" />
                         Contact Driver
                       </Button>
-                      <Button variant="destructive" size="sm">
-                        Cancel Booking
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            Cancel Booking
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to cancel this booking? The driver will be notified.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleCancelRide(ride.id, 'booked')}>
+                              Cancel Booking
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </CardContent>
                 </Card>
@@ -223,6 +259,22 @@ const MyRides = () => {
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-sm">
                           <strong>{ride.passengers}</strong> passengers
+                        </span>
+                      </div>
+                    )}
+                    {ride.earnings && (
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="h-4 w-4 text-green-500" />
+                        <span className="text-sm text-green-600">
+                          Earned: <strong>${ride.earnings}</strong>
+                        </span>
+                      </div>
+                    )}
+                    {ride.costPaid && (
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm text-blue-600">
+                          Paid: <strong>${ride.costPaid}</strong>
                         </span>
                       </div>
                     )}

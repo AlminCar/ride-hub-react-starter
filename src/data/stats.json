@@ -1,0 +1,11 @@
+
+{
+  "userStats": {
+    "activeRides": 12,
+    "moneySaved": 245,
+    "co2Saved": 45,
+    "totalRides": 87,
+    "driverRating": 4.8,
+    "passengerRating": 4.9
+  }
+}

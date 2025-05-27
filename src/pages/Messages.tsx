@@ -5,107 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Send, Search, Phone, Video, MoreVertical } from "lucide-react";
+import { Send, Search, Phone, Video, MoreVertical, Archive, CheckCheck } from "lucide-react";
+import messagesData from "../data/messages.json";
 
 const Messages = () => {
   const [selectedChat, setSelectedChat] = useState(0);
   const [newMessage, setNewMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const conversations = [
-    {
-      id: 1,
-      name: "Sarah Wilson",
-      lastMessage: "Thanks for the ride! See you tomorrow.",
-      time: "2:30 PM",
-      unread: 0,
-      avatar: "/placeholder-avatar.jpg",
-      status: "online",
-      rideInfo: "Downtown → Airport"
-    },
-    {
-      id: 2,
-      name: "Mike Johnson",
-      lastMessage: "What time should we meet?",
-      time: "1:45 PM",
-      unread: 2,
-      avatar: "/placeholder-avatar.jpg",
-      status: "away",
-      rideInfo: "University → Mall"
-    },
-    {
-      id: 3,
-      name: "Alice Brown",
-      lastMessage: "Perfect! I'll be waiting at the usual spot.",
-      time: "11:20 AM",
-      unread: 0,
-      avatar: "/placeholder-avatar.jpg",
-      status: "offline",
-      rideInfo: "Home → Office"
-    },
-    {
-      id: 4,
-      name: "David Chen",
-      lastMessage: "Can we leave 15 minutes earlier?",
-      time: "Yesterday",
-      unread: 1,
-      avatar: "/placeholder-avatar.jpg",
-      status: "online",
-      rideInfo: "Mall → Home"
-    }
-  ];
+  const { conversations, messages } = messagesData;
 
-  const messages = [
-    {
-      id: 1,
-      sender: "other",
-      content: "Hi! I saw your ride offer for tomorrow. Is it still available?",
-      time: "2:15 PM",
-      avatar: "/placeholder-avatar.jpg"
-    },
-    {
-      id: 2,
-      sender: "me",
-      content: "Yes, it's still available! I have 2 seats left.",
-      time: "2:18 PM"
-    },
-    {
-      id: 3,
-      sender: "other",
-      content: "Great! What time are you planning to leave?",
-      time: "2:20 PM",
-      avatar: "/placeholder-avatar.jpg"
-    },
-    {
-      id: 4,
-      sender: "me",
-      content: "I'll be leaving at 3:00 PM from Downtown. The pickup point is in front of the mall entrance.",
-      time: "2:22 PM"
-    },
-    {
-      id: 5,
-      sender: "other",
-      content: "Perfect! I'll be there at 3:00 PM sharp. Should I bring anything?",
-      time: "2:25 PM",
-      avatar: "/placeholder-avatar.jpg"
-    },
-    {
-      id: 6,
-      sender: "me",
-      content: "Just be on time! Looking forward to meeting you.",
-      time: "2:28 PM"
-    },
-    {
-      id: 7,
-      sender: "other",
-      content: "Thanks for the ride! See you tomorrow.",
-      time: "2:30 PM",
-      avatar: "/placeholder-avatar.jpg"
-    }
-  ];
+  const filteredConversations = conversations.filter(conv =>
+    conv.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    conv.rideInfo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      // Handle sending message
+      console.log("Sending message:", newMessage);
       setNewMessage("");
     }
   };
@@ -119,6 +36,23 @@ const Messages = () => {
       default:
         return "bg-gray-400";
     }
+  };
+
+  const getMessageStatusIcon = (status: string) => {
+    switch (status) {
+      case "read":
+        return <CheckCheck className="h-3 w-3 text-blue-500" />;
+      case "delivered":
+        return <CheckCheck className="h-3 w-3 text-gray-400" />;
+      case "sent":
+        return <CheckCheck className="h-3 w-3 text-gray-300" />;
+      default:
+        return null;
+    }
+  };
+
+  const handleArchiveConversation = (conversationId: number) => {
+    console.log("Archiving conversation:", conversationId);
   };
 
   return (
@@ -141,12 +75,14 @@ const Messages = () => {
                 <Input
                   placeholder="Search conversations..."
                   className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </CardHeader>
             <CardContent className="p-0">
               <div className="space-y-1">
-                {conversations.map((conversation, index) => (
+                {filteredConversations.map((conversation, index) => (
                   <div
                     key={conversation.id}
                     className={`p-4 hover:bg-gray-50 cursor-pointer border-l-4 transition-colors ${
@@ -198,14 +134,14 @@ const Messages = () => {
                 <div className="flex items-center space-x-3">
                   <div className="relative">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={conversations[selectedChat]?.avatar} alt={conversations[selectedChat]?.name} />
-                      <AvatarFallback>{conversations[selectedChat]?.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      <AvatarImage src={filteredConversations[selectedChat]?.avatar} alt={filteredConversations[selectedChat]?.name} />
+                      <AvatarFallback>{filteredConversations[selectedChat]?.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
-                    <div className={`absolute -bottom-1 -right-1 w-3 h-3 ${getStatusColor(conversations[selectedChat]?.status || 'offline')} rounded-full border-2 border-white`}></div>
+                    <div className={`absolute -bottom-1 -right-1 w-3 h-3 ${getStatusColor(filteredConversations[selectedChat]?.status || 'offline')} rounded-full border-2 border-white`}></div>
                   </div>
                   <div>
-                    <h3 className="font-medium">{conversations[selectedChat]?.name}</h3>
-                    <p className="text-sm text-blue-600">{conversations[selectedChat]?.rideInfo}</p>
+                    <h3 className="font-medium">{filteredConversations[selectedChat]?.name}</h3>
+                    <p className="text-sm text-blue-600">{filteredConversations[selectedChat]?.rideInfo}</p>
                   </div>
                 </div>
                 <div className="flex space-x-2">
@@ -214,6 +150,13 @@ const Messages = () => {
                   </Button>
                   <Button variant="outline" size="sm">
                     <Video className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleArchiveConversation(filteredConversations[selectedChat]?.id)}
+                  >
+                    <Archive className="h-4 w-4" />
                   </Button>
                   <Button variant="outline" size="sm">
                     <MoreVertical className="h-4 w-4" />
@@ -233,7 +176,7 @@ const Messages = () => {
                     {message.sender === 'other' && (
                       <Avatar className="h-6 w-6">
                         <AvatarImage src={message.avatar} alt="User" />
-                        <AvatarFallback className="text-xs">{conversations[selectedChat]?.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        <AvatarFallback className="text-xs">{filteredConversations[selectedChat]?.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                       </Avatar>
                     )}
                     <div
@@ -244,9 +187,14 @@ const Messages = () => {
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
-                      <p className={`text-xs mt-1 ${message.sender === 'me' ? 'text-blue-100' : 'text-gray-500'}`}>
-                        {message.time}
-                      </p>
+                      <div className={`flex items-center justify-between mt-1 ${message.sender === 'me' ? 'text-blue-100' : 'text-gray-500'}`}>
+                        <p className="text-xs">{message.time}</p>
+                        {message.sender === 'me' && message.status && (
+                          <div className="ml-2">
+                            {getMessageStatusIcon(message.status)}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

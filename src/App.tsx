@@ -11,6 +11,7 @@ import AddNewRide from "./pages/AddNewRide";
 import Analytics from "./pages/Analytics";
 import Messages from "./pages/Messages";
 import UserProfile from "./pages/UserProfile";
+import Map from "./pages/Map";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/add-ride" element={<AddNewRide />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/messages" element={<Messages />} />
+              <Route path="/map" element={<Map />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

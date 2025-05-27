@@ -1,0 +1,100 @@
+
+{
+  "conversations": [
+    {
+      "id": 1,
+      "name": "Sarah Wilson",
+      "lastMessage": "Thanks for the ride! See you tomorrow.",
+      "time": "2:30 PM",
+      "unread": 0,
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "online",
+      "rideInfo": "Downtown → Airport"
+    },
+    {
+      "id": 2,
+      "name": "Mike Johnson",
+      "lastMessage": "What time should we meet?",
+      "time": "1:45 PM",
+      "unread": 2,
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "away",
+      "rideInfo": "University → Mall"
+    },
+    {
+      "id": 3,
+      "name": "Alice Brown",
+      "lastMessage": "Perfect! I'll be waiting at the usual spot.",
+      "time": "11:20 AM",
+      "unread": 0,
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "offline",
+      "rideInfo": "Home → Office"
+    },
+    {
+      "id": 4,
+      "name": "David Chen",
+      "lastMessage": "Can we leave 15 minutes earlier?",
+      "time": "Yesterday",
+      "unread": 1,
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "online",
+      "rideInfo": "Mall → Home"
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "sender": "other",
+      "content": "Hi! I saw your ride offer for tomorrow. Is it still available?",
+      "time": "2:15 PM",
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "read"
+    },
+    {
+      "id": 2,
+      "sender": "me",
+      "content": "Yes, it's still available! I have 2 seats left.",
+      "time": "2:18 PM",
+      "status": "delivered"
+    },
+    {
+      "id": 3,
+      "sender": "other",
+      "content": "Great! What time are you planning to leave?",
+      "time": "2:20 PM",
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "read"
+    },
+    {
+      "id": 4,
+      "sender": "me",
+      "content": "I'll be leaving at 3:00 PM from Downtown. The pickup point is in front of the mall entrance.",
+      "time": "2:22 PM",
+      "status": "sent"
+    },
+    {
+      "id": 5,
+      "sender": "other",
+      "content": "Perfect! I'll be there at 3:00 PM sharp. Should I bring anything?",
+      "time": "2:25 PM",
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "read"
+    },
+    {
+      "id": 6,
+      "sender": "me",
+      "content": "Just be on time! Looking forward to meeting you.",
+      "time": "2:28 PM",
+      "status": "delivered"
+    },
+    {
+      "id": 7,
+      "sender": "other",
+      "content": "Thanks for the ride! See you tomorrow.",
+      "time": "2:30 PM",
+      "avatar": "/placeholder-avatar.jpg",
+      "status": "read"
+    }
+  ]
+}

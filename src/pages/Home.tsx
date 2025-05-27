@@ -3,26 +3,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, Users, Car } from "lucide-react";
+import ridesData from "../data/rides.json";
+import statsData from "../data/stats.json";
 
 const Home = () => {
-  const recentRides = [
-    {
-      id: 1,
-      from: "Downtown",
-      to: "Airport",
-      time: "2:30 PM",
-      seats: 2,
-      driver: "Alice Johnson"
-    },
-    {
-      id: 2,
-      from: "University",
-      to: "Mall",
-      time: "4:15 PM",
-      seats: 3,
-      driver: "Bob Smith"
-    }
-  ];
+  const { availableRides } = ridesData;
+  const { userStats } = statsData;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -59,7 +45,7 @@ const Home = () => {
               <Car className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
+              <div className="text-2xl font-bold">{userStats.activeRides}</div>
               <p className="text-xs text-muted-foreground">
                 +2 from last week
               </p>
@@ -71,7 +57,7 @@ const Home = () => {
               <div className="text-green-600">$</div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$245</div>
+              <div className="text-2xl font-bold">${userStats.moneySaved}</div>
               <p className="text-xs text-muted-foreground">
                 This month
               </p>
@@ -83,7 +69,7 @@ const Home = () => {
               <div className="text-green-600">♻</div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">45 kg</div>
+              <div className="text-2xl font-bold">{userStats.co2Saved} kg</div>
               <p className="text-xs text-muted-foreground">
                 Environmental impact
               </p>
@@ -100,7 +86,7 @@ const Home = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {recentRides.map((ride) => (
+            {availableRides.map((ride) => (
               <Card key={ride.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
@@ -125,7 +111,7 @@ const Home = () => {
                       </span>
                     </div>
                     <div className="flex justify-between items-center pt-2">
-                      <span className="text-lg font-bold text-blue-600">$15</span>
+                      <span className="text-lg font-bold text-blue-600">${ride.price}</span>
                       <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                         Join Ride
                       </Button>
