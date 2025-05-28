@@ -1,4 +1,3 @@
-
 export interface Applicant {
   id: number;
   name: string;
@@ -39,6 +38,8 @@ export interface OfferedRide {
   applicants: Applicant[];
   costBreakdown: CostBreakdown;
   payments: Payment[];
+  fromCoordinates?: [number, number];
+  toCoordinates?: [number, number];
 }
 
 export interface BookedRide {
@@ -53,6 +54,8 @@ export interface BookedRide {
   appliedAt: string;
   costShare: number;
   pickupLocation: string;
+  fromCoordinates?: [number, number];
+  toCoordinates?: [number, number];
 }
 
 export interface PastRide {
@@ -66,6 +69,8 @@ export interface PastRide {
   earnings?: number;
   driver?: string;
   costPaid?: number;
+  fromCoordinates?: [number, number];
+  toCoordinates?: [number, number];
 }
 
 export interface AvailableRide {
@@ -77,4 +82,6 @@ export interface AvailableRide {
   driver: string;
   price: number;
   date: string;
+  fromCoordinates?: [number, number];
+  toCoordinates?: [number, number];
 }
