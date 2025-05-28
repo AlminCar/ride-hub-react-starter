@@ -9,34 +9,24 @@ type MapStateType = {
 }
 
 export function useMaps() {
-  const loadInitialData = () => {
-    try {
-      const saved = localStorage.getItem("mapState");
-      return saved ? JSON.parse(saved) : {
-        center: { lat: 40.7128, lng: -74.0060 },
-        zoom: 12,
-        selectedRide: null,
-        showRoutes: true
-      };
-    } catch (error) {
-      console.error("Error loading mapState from localStorage", error);
-      return {
-        center: { lat: 40.7128, lng: -74.0060 },
-        zoom: 12,
-        selectedRide: null,
-        showRoutes: true
-      };
-    }
-  };
-
   const mapData = useQuery<MapStateType>({
     queryKey: ["mapState"],
-    initialData: loadInitialData(),
+    initialData: {
+      center: { lat: 40.7128, lng: -74.0060 },
+      zoom: 12,
+      selectedRide: null,
+      showRoutes: true
+    },
     staleTime: Infinity,
     queryFn: async () => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve(loadInitialData());
+          resolve({
+            center: { lat: 40.7128, lng: -74.0060 },
+            zoom: 12,
+            selectedRide: null,
+            showRoutes: true
+          });
         }, 1000);
       });
     },

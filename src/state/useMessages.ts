@@ -3,24 +3,14 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { messages } from "@/data/messages.json";
 
 export function useMessages() {
-  const loadInitialData = () => {
-    try {
-      const saved = localStorage.getItem("messages");
-      return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(messages));
-    } catch (error) {
-      console.error("Error loading messages from localStorage", error);
-      return JSON.parse(JSON.stringify(messages));
-    }
-  };
-
   const messagesData = useQuery({
     queryKey: ["messages"],
-    initialData: loadInitialData(),
+    initialData: JSON.parse(JSON.stringify(messages)),
     staleTime: Infinity,
     queryFn: async () => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve(loadInitialData());
+          resolve(JSON.parse(JSON.stringify(messages)));
         }, 1000);
       });
     }
