@@ -2,14 +2,25 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { myOfferedRides } from "@/data/rides.json";
 
 export function useMyOfferedRides() {
+  // Try to load from localStorage first
+  const loadInitialData = () => {
+    try {
+      const saved = localStorage.getItem("myOfferedRides");
+      return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(myOfferedRides));
+    } catch (error) {
+      console.error("Error loading myOfferedRides from localStorage", error);
+      return JSON.parse(JSON.stringify(myOfferedRides));
+    }
+  };
+
   const myOfferedRidesData = useQuery({
     queryKey: ["myOfferedRides"],
-    initialData: JSON.parse(JSON.stringify(myOfferedRides)),
+    initialData: loadInitialData(),
     staleTime: Infinity,
     queryFn: async () => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve(JSON.parse(JSON.stringify(myOfferedRides)));
+          resolve(loadInitialData()); 
         }, 1000);
       });
     },
