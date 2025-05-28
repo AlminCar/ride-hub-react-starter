@@ -17,8 +17,7 @@ export const AppInitializer = () => {
   const { data: mapsState } = useMaps();
   const { data: messagesState } = useMessages();
 
-
-  // Save to localStorage when offeredRides changes
+  // Save myOfferedRides to localStorage
   useEffect(() => {
     if (offeredRides !== undefined) {
       try {
@@ -30,40 +29,102 @@ export const AppInitializer = () => {
     }
   }, [offeredRides]);
 
+  // Save myAvailableRides to localStorage
+  useEffect(() => {
+    if (availableRides !== undefined) {
+      try {
+        localStorage.setItem("myAvailableRides", JSON.stringify(availableRides));
+        console.log("Saved myAvailableRides to localStorage:", availableRides);
+      } catch (error) {
+        console.error("Error saving myAvailableRides to localStorage", error);
+      }
+    }
+  }, [availableRides]);
+
+  // Save myBookedRides to localStorage
+  useEffect(() => {
+    if (bookedRides !== undefined) {
+      try {
+        localStorage.setItem("myBookedRides", JSON.stringify(bookedRides));
+        console.log("Saved myBookedRides to localStorage:", bookedRides);
+      } catch (error) {
+        console.error("Error saving myBookedRides to localStorage", error);
+      }
+    }
+  }, [bookedRides]);
+
+  // Save myPastRides to localStorage
+  useEffect(() => {
+    if (pastRides !== undefined) {
+      try {
+        localStorage.setItem("myPastRides", JSON.stringify(pastRides));
+        console.log("Saved myPastRides to localStorage:", pastRides);
+      } catch (error) {
+        console.error("Error saving myPastRides to localStorage", error);
+      }
+    }
+  }, [pastRides]);
+
+  // Save administration state to localStorage
+  useEffect(() => {
+    if (administrationState !== undefined) {
+      try {
+        localStorage.setItem("administration", JSON.stringify(administrationState));
+        console.log("Saved administration to localStorage:", administrationState);
+      } catch (error) {
+        console.error("Error saving administration to localStorage", error);
+      }
+    }
+  }, [administrationState]);
+
+  // Save map state to localStorage
+  useEffect(() => {
+    if (mapsState !== undefined) {
+      try {
+        localStorage.setItem("mapState", JSON.stringify(mapsState));
+        console.log("Saved mapState to localStorage:", mapsState);
+      } catch (error) {
+        console.error("Error saving mapState to localStorage", error);
+      }
+    }
+  }, [mapsState]);
+
+  // Save messages to localStorage
+  useEffect(() => {
+    if (messagesState !== undefined) {
+      try {
+        localStorage.setItem("messages", JSON.stringify(messagesState));
+        console.log("Saved messages to localStorage:", messagesState);
+      } catch (error) {
+        console.error("Error saving messages to localStorage", error);
+      }
+    }
+  }, [messagesState]);
+
   // Save on page unload
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (offeredRides !== undefined) {
         localStorage.setItem("myOfferedRides", JSON.stringify(offeredRides));
       }
-      event.preventDefault();
-      event.returnValue = "";
-      return "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [offeredRides]);
-
-  // ---------------------------------------------------------------------------------
-   // Save to localStorage when offeredRides changes
-   useEffect(() => {
-    if (offeredRides !== undefined) {
-      try {
-        localStorage.setItem("myAvailableRides", JSON.stringify(availableRides));
-        console.log("Saved myOfferedRides to localStorage:", availableRides);
-      } catch (error) {
-        console.error("Error saving myOfferedRides to localStorage", error);
-      }
-    }
-  }, []);
-
-  // Save on page unload
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (availableRides !== undefined) {
         localStorage.setItem("myAvailableRides", JSON.stringify(availableRides));
       }
+      if (bookedRides !== undefined) {
+        localStorage.setItem("myBookedRides", JSON.stringify(bookedRides));
+      }
+      if (pastRides !== undefined) {
+        localStorage.setItem("myPastRides", JSON.stringify(pastRides));
+      }
+      if (administrationState !== undefined) {
+        localStorage.setItem("administration", JSON.stringify(administrationState));
+      }
+      if (mapsState !== undefined) {
+        localStorage.setItem("mapState", JSON.stringify(mapsState));
+      }
+      if (messagesState !== undefined) {
+        localStorage.setItem("messages", JSON.stringify(messagesState));
+      }
       event.preventDefault();
       event.returnValue = "";
       return "";
@@ -71,7 +132,7 @@ export const AppInitializer = () => {
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [availableRides]);
+  }, [offeredRides, availableRides, bookedRides, pastRides, administrationState, mapsState, messagesState]);
 
   return null;
 };

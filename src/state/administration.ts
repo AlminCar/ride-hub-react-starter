@@ -9,14 +9,38 @@ type AdministrationStateType = {
 }
 
 export function useAdministration() {
-  const administration = useQuery<AdministrationStateType>({
-    queryKey: ["administration"],
-    initialData: {
+  const loadInitialData = () => {
+    try {
+      const saved = localStorage.getItem("administration");
+      return saved ? JSON.parse(saved) : {
         mapIntegration: true,
         realTimeMessaging: true,
         pushNotifications: true,
         costSharing: true,
         adminReporting: true
+      };
+    } catch (error) {
+      console.error("Error loading administration from localStorage", error);
+      return {
+        mapIntegration: true,
+        realTimeMessaging: true,
+        pushNotifications: true,
+        costSharing: true,
+        adminReporting: true
+      };
+    }
+  };
+
+  const administration = useQuery<AdministrationStateType>({
+    queryKey: ["administration"],
+    initialData: loadInitialData(),
+    staleTime: Infinity,
+    queryFn: async () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(loadInitialData());
+        }, 1000);
+      });
     },
   });
 
@@ -37,4 +61,3 @@ export function useUpdateAdministration() {
 
   return { ...administration };
 }
-

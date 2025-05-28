@@ -1,23 +1,44 @@
 
-import { useQuery } from '@tanstack/react-query';
-import statsData from '../data/stats.json';
+import { useQuery } from "@tanstack/react-query";
+import { stats } from "@/data/stats.json";
 
-interface RideStats {
+export interface RideStats {
   totalRides: number;
   totalUsers: number;
   totalSavings: number;
   activeRides: number;
+  userStats?: {
+    activeRides: number;
+    moneySaved: number;
+    co2Saved: number;
+    totalRides: number;
+    driverRating: number;
+    passengerRating: number;
+  };
 }
 
-const fetchStats = async (): Promise<RideStats> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return statsData;
-};
-
-export const useStats = () => {
-  return useQuery({
-    queryKey: ['stats'],
-    queryFn: fetchStats,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+export function useStats() {
+  return useQuery<RideStats>({
+    queryKey: ["stats"],
+    initialData: {
+      totalRides: stats.userStats.totalRides,
+      totalUsers: 150,
+      totalSavings: stats.userStats.moneySaved,
+      activeRides: stats.userStats.activeRides,
+      userStats: stats.userStats
+    },
+    queryFn: async () => {
+      return new Promise<RideStats>((resolve) => {
+        setTimeout(() => {
+          resolve({
+            totalRides: stats.userStats.totalRides,
+            totalUsers: 150,
+            totalSavings: stats.userStats.moneySaved,
+            activeRides: stats.userStats.activeRides,
+            userStats: stats.userStats
+          });
+        }, 1000);
+      });
+    },
   });
-};
+}
